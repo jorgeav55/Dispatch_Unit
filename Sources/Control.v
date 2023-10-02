@@ -9,8 +9,8 @@ module Control (
 					ALUsrc,
 					RegWrite,
 					PCSave,
-	output reg [1:0] 	ALU_Op,
-							MemToReg
+	output reg [1:0] 	ALU_Op
+							//MemToReg
 );
 
 localparam R_Type = 7'h33;
@@ -33,7 +33,7 @@ always @ * begin
 			JumpR = 1'b0;
 			Branch = 1'b0;
 			MemRead = 1'b0;
-			MemToReg = 2'b00;
+			//MemToReg = 2'b00;
 			MemWrite = 1'b0;
 			ALUsrc = 1'b0;
 			RegWrite = 1'b1;
@@ -47,7 +47,7 @@ always @ * begin
 			JumpR = 1'b0;
 			Branch = 1'b0;
 			MemRead = 1'b0;
-			MemToReg = 2'b00;
+			//MemToReg = 2'b00;
 			MemWrite = 1'b0;
 			ALUsrc = 1'b1;
 			RegWrite = 1'b1;
@@ -61,7 +61,7 @@ always @ * begin
 			JumpR = 1'b0;
 			Branch = 1'b0;
 			MemRead = 1'b1;
-			MemToReg = 2'b01;
+			//MemToReg = 2'b01;
 			MemWrite = 1'b0;
 			ALUsrc = 1'b1;
 			RegWrite = 1'b1;
@@ -75,7 +75,7 @@ always @ * begin
 			JumpR = 1'b0;
 			Branch = 1'b0;
 			MemRead = 1'b0;
-			MemToReg = 2'b00;
+			//MemToReg = 2'b00;
 			MemWrite = 1'b1;
 			ALUsrc = 1'b1;
 			RegWrite = 1'b0;
@@ -89,7 +89,7 @@ always @ * begin
 			JumpR = 1'b0;
 			Branch = 1'b1;
 			MemRead = 1'b0;
-			MemToReg = 2'b00;
+			//MemToReg = 2'b00;
 			MemWrite = 1'b0;
 			ALUsrc = 1'b0;
 			RegWrite = 1'b0;
@@ -103,7 +103,7 @@ always @ * begin
 			JumpR = 1'b0;
 			Branch = 1'b0;
 			MemRead = 1'b0;
-			MemToReg = 2'b10;
+			//MemToReg = 2'b10;
 			MemWrite = 1'b0;
 			ALUsrc = 1'b0;
 			RegWrite = 1'b1;
@@ -117,7 +117,7 @@ always @ * begin
 			JumpR = 1'b1;
 			Branch = 1'b0;
 			MemRead = 1'b0;
-			MemToReg = 2'b10;
+			//MemToReg = 2'b10;
 			MemWrite = 1'b0;
 			ALUsrc = 1'b1;
 			RegWrite = 1'b1;
@@ -131,7 +131,7 @@ always @ * begin
 			JumpR = 1'b0;
 			Branch = 1'b0;
 			MemRead = 1'b0;
-			MemToReg = 2'b11;
+			//MemToReg = 2'b11;
 			MemWrite = 1'b0;
 			ALUsrc = 1'b0;
 			RegWrite = 1'b1;
@@ -145,7 +145,7 @@ always @ * begin
 			JumpR = 1'b0;
 			Branch = 1'b0;
 			MemRead = 1'b0;
-			MemToReg = 2'b10;
+			//MemToReg = 2'b10;
 			MemWrite = 1'b0;
 			ALUsrc = 1'b0;
 			RegWrite = 1'b1;
@@ -159,7 +159,7 @@ always @ * begin
 			JumpR = 1'b0;
 			Branch = 1'b0;
 			MemRead = 1'b0;
-			MemToReg = 2'b00;
+			//MemToReg = 2'b00;
 			MemWrite = 1'b0;
 			ALUsrc = 1'b0;
 			RegWrite = 1'b0;

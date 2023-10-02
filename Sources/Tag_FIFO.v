@@ -22,7 +22,7 @@ input 									flush;
 input 									cdb_tag_tf_valid;
 input	 		[TAG_WIDTH-1:0]		cdb_tag_tf;
 input 									ren_tf;
-output reg	[TAG_WIDTH-1:0]		tagout_tf;
+output 		[TAG_WIDTH-1:0]		tagout_tf;
 output									ff_tf;
 output 									ef_tf;
 
@@ -35,19 +35,26 @@ assign 	ef_tf = (WP == RP)? 1'b1 : 1'b0;
 //Condition to know if the fifo is full
 assign	ff_tf = ((WP[5:0] == RP[5:0]) && (WP[6] != RP[6])) ? 1'b1 : 1'b0;
 
+assign   tagout_tf = Data_out[RP[5:0]];
+
 					
 always @(posedge reset, posedge clk) begin
 	if (reset == 1'b1)begin
 		RP <= 7'b0000000;
 		WP <= 7'b1000000;
 		end
-	else if (ren_tf == 1'b1) begin
-		tagout_tf <= Data_out[RP[5:0]];
-		RP <= RP + 1'b1;
+	else begin 
+		if (ren_tf == 1'b1) begin
+			RP <= RP + 1'b1;
 		end
-	else if (cdb_tag_tf_valid == 1'b1) begin
-		WP <= WP + 1'b1;
+		else
+			RP <= RP;
+		if (cdb_tag_tf_valid == 1'b1) begin
+			WP <= WP + 1'b1;
 		end 
+		else
+			WP <= WP;
+	end
 end 
 
 

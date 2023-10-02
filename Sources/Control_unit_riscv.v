@@ -15,7 +15,7 @@ module Control_unit_riscv(
 					PCSave,
 					BNEinst, 
 					BEQinst,
-		output [1:0] MemToReg,
+		//output [1:0] MemToReg,
 		output [2:0] InstType,
 		output [4:0] ALU_control
 ); 
@@ -44,7 +44,7 @@ Control ControlModule(
 	.RegWrite(RegWrite),
 	.PCSave(PCSave),
 	.ALU_Op(ALU_option),
-	.MemToReg(MemToReg)
+	//.MemToReg(MemToReg)
 );
 ALU_decoder ALU_controller(
 .modifier(funct7_modifier_bits),
