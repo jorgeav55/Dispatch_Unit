@@ -1,0 +1,13 @@
+module Branch_Stall_Logic (
+	Branch,
+	Issueque_full_int,
+	cdb_branch,
+	stall
+	
+);
+
+input		Branch,
+			Issueque_full_int,
+			cdb_branch,
+			cdb_branch_taken;
+output	stall;

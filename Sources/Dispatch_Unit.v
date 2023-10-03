@@ -114,4 +114,26 @@ Register_Status_Table RST(
 	.RF_write_enable(RF_write_enable)
 );
 
+
+////////////////////////////////////////////////////////
+//adder pc + branch address
+////////////////////////////////////////////////////////
+adder PC_adder(
+//Inputs
+.A(PC_out),
+.B(Inmediate_Data),
+.suma(jump_branch_address)
+);
+
+Branch_Stall_Logic (
+	.clk(),
+	.reset(),
+	.Branch(),
+	.Issueque_full_int(),
+	.cdb_branch(),
+	.cdb_branch_taken(),
+	.stall()
+	
+);
+
 endmodule
