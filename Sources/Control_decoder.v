@@ -2,6 +2,7 @@ module Control (
 	op_inst,
 	InstType,
 	func3,
+	func7,
 	Branch,
 	RegWrite,
 	//Jump,
@@ -16,14 +17,15 @@ module Control (
 	issueque_full_mul,
 	issueque_full_div	
 );
-input op_inst;
-output InstType;
-input func3;
+input [6:0] op_inst;
+output [2:0] InstType;
+input [2:0] func3;
+input [6:0] func7;
 output Branch;
 output RegWrite;
 //Jump,
 //JumpR,
-output dispatch_opcode;
+output [3:0] dispatch_opcode;
 output dispatch_en_integer;
 output dispatch_en-ld_st;
 output dispatch_en_mul;
@@ -43,6 +45,16 @@ localparam I_Jump_Type = 7'h67;
 localparam U_Load_Type = 7'h37;
 localparam U_Add_Type = 7'h17;
 
+wire int_enabler;
+assign int_enabler = (func7 == 7'h00) || (func7 == 7'h20) ? 1'b1: 1'b0;
+
+wire mul_enabler;
+assign mul_enabler = (func7 == 7'h01) && (funct3 == 3'b000) ? 1'b1: 1'b0;
+
+wire div_enabler;
+assign div_enabler = (func7 == 7'h01) && (funct3 == 3'b100) ? 1'b1: 1'b0;
+
+
 always @ * begin
 	case (op_inst)
 		R_Type:
@@ -52,11 +64,11 @@ always @ * begin
 			RegWrite = 1'b1;
 			//Jump,
 			//JumpR,
-			dispatch_opcode = func3;
-			dispatch_en_integer = ~issueque_full_integer;
+			dispatch_opcode = {func7[5],func3};
+			dispatch_en_integer = (~issueque_full_integer) & (int_enabler);
 			dispatch_en-ld_st = 1'b0;
-			dispatch_en_mul = 1'b0;
-			dispatch_en_div = 1'b0;
+			dispatch_en_mul = (~issueque_full_mul) & (mul_enabler);
+			dispatch_en_div = (~issueque_full_div) & (div_enabler);
 			/*InstType = 3'b111;
 			//ALU_Op = 2'b10;
 			Jump = 1'b0;
@@ -76,7 +88,7 @@ always @ * begin
 			RegWrite = 1'b1;
 			//Jump,
 			//JumpR,
-			dispatch_opcode = func3;
+			dispatch_opcode = {1'b0,func3};
 			dispatch_en_integer = ~issueque_full_integer;
 			dispatch_en-ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
@@ -100,7 +112,7 @@ always @ * begin
 			RegWrite = 1'b1;
 			//Jump,
 			//JumpR,
-			dispatch_opcode = 3'b001;
+			dispatch_opcode = 4'b0001;
 			dispatch_en_integer = 1'b0;
 			dispatch_en-ld_st = ~issueque_full_ld_st;
 			dispatch_en_mul = 1'b0;
@@ -124,7 +136,7 @@ always @ * begin
 			RegWrite = 1'b0;
 			//Jump,
 			//JumpR,
-			dispatch_opcode = 3'b010;
+			dispatch_opcode = 4'b0010;
 			dispatch_en_integer = 1'b0;
 			dispatch_en-ld_st = ~issueque_full_ld_st;
 			dispatch_en_mul = 1'b0;
@@ -148,7 +160,7 @@ always @ * begin
 			RegWrite = 1'b0;
 			//Jump,
 			//JumpR,
-			dispatch_opcode = 3'b000;
+			dispatch_opcode = 4'b0000;
 			dispatch_en_integer = 1'b0;
 			dispatch_en-ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
@@ -172,7 +184,7 @@ always @ * begin
 			RegWrite = 1'b1;
 			//Jump,
 			//JumpR,
-			dispatch_opcode = 3'b000;
+			dispatch_opcode = 4'b0000;
 			dispatch_en_integer = 1'b0;
 			dispatch_en-ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
@@ -196,7 +208,7 @@ always @ * begin
 			RegWrite = 1'b1;
 			//Jump,
 			//JumpR,
-			dispatch_opcode = func3;
+			dispatch_opcode = 4'b0000;
 			dispatch_en_integer = 1'b0;
 			dispatch_en-ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
@@ -220,7 +232,7 @@ always @ * begin
 			RegWrite = 1'b1;
 			//Jump,
 			//JumpR,
-			dispatch_opcode = func3;
+			dispatch_opcode = 4'b0000;
 			dispatch_en_integer = ~issueque_full_integer;
 			dispatch_en-ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
@@ -244,7 +256,7 @@ always @ * begin
 			RegWrite = 1'b1;
 			//Jump,
 			//JumpR,
-			dispatch_opcode = func3;
+			dispatch_opcode = 4'b0000;
 			dispatch_en_integer = ~issueque_full_integer;
 			dispatch_en-ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
@@ -268,7 +280,7 @@ always @ * begin
 			RegWrite = 1'b0;
 			//Jump,
 			//JumpR,
-			dispatch_opcode = 3'b0;
+			dispatch_opcode = 4'b0000;
 			dispatch_en_integer = 1'b0;
 			dispatch_en-ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
