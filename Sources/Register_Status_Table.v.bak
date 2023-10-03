@@ -1,0 +1,53 @@
+module Register_Status_Table (
+	clk,
+	write_data0,
+	write_address0,
+	write_enable0,
+	write_data1,
+	write_enable1,
+	read_address0,
+	read_tag0,
+	read_valid0,
+	read_address1,
+	read_tag1,
+	read_valid1,
+	cdb_tag,
+	cdb_valid,
+	RF_write_enable
+);
+
+input [6:0] write_data0;
+input [4:0] write_address0;
+input write_enable0;
+input [6:0] write_data1;
+input [31:0] write_enable1;
+input [4:0] read_address0;
+output [5:0] read_tag0;
+output read_valid0;
+input [4:0] read_address1;
+output [5:0] read_tag1;
+output read_valid1;
+input [5:0] cdb_tag;
+input cdb_valid;
+output [31:0] RF_write_enable;
+
+genvar i;
+generate
+	for (i=0;i<32;i=i+1) begin: Ins
+		Register 
+		#(
+			.DATA_WIDTH(7)) R 
+		(
+			.data_in			(),
+			.dafault_data	(7'b0),
+			.reset			(reset),
+			.enable			(),
+			.flush			(),
+			.clk				(clk),
+			.data_out		()
+		);
+	end
+endgenerate
+
+
+endmodule
