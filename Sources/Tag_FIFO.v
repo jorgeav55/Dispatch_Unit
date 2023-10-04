@@ -11,7 +11,7 @@ module Tag_FIFO
 	ren_tf,
 //Outputs
 	tagout_tf,
-	ff_tf,
+	//ff_tf,
 	ef_tf
 
 );
@@ -23,7 +23,7 @@ input 									cdb_tag_tf_valid;
 input	 		[TAG_WIDTH-1:0]		cdb_tag_tf;
 input 									ren_tf;
 output 		[TAG_WIDTH-1:0]		tagout_tf;
-output									ff_tf;
+//output									ff_tf;
 output 									ef_tf;
 
 reg 	[6:0]		RP,
@@ -33,7 +33,7 @@ wire [TAG_WIDTH-1:0] Data_out [63:0];
 //Condition to know if the fifo is empty					
 assign 	ef_tf = (WP == RP)? 1'b1 : 1'b0;
 //Condition to know if the fifo is full
-assign	ff_tf = ((WP[5:0] == RP[5:0]) && (WP[6] != RP[6])) ? 1'b1 : 1'b0;
+//assign	ff_tf = ((WP[5:0] == RP[5:0]) && (WP[6] != RP[6])) ? 1'b1 : 1'b0;
 
 assign   tagout_tf = Data_out[RP[5:0]];
 
@@ -67,7 +67,7 @@ generate
 			.DATA_WIDTH(TAG_WIDTH)) R 
 		(
 			.data_in			(cdb_tag_tf),
-			.dafault_data	(i),
+			.dafault_data	(i[5:0]),
 			.reset			(reset),
 			.enable			(enable[i]),
 			.flush			(flush),
