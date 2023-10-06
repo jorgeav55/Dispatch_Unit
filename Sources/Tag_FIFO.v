@@ -62,7 +62,7 @@ genvar i;
 generate
 	for (i=0;i<64;i=i+1) begin: Ins
 		
-		Register 
+		Register_df 
 		#(
 			.DATA_WIDTH(TAG_WIDTH)) R 
 		(
