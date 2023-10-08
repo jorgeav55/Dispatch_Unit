@@ -23,7 +23,7 @@ always @* begin
 		I_type:		Imm= {{20{Datain[24]}},Datain[24:13]};
 		//I_typeShift:Imm= {{27{Datain[24]}},Datain[17:13]};
 		S_type: 		Imm= {{20{Datain[24]}},Datain[24:18],Datain[4:0]};
-		B_type: 		Imm= {{21{Datain[24]}},Datain[24],Datain[0],Datain[23:18],Datain[4:2]};
+		B_type: 		Imm= {{19{Datain[24]}},Datain[24],Datain[0],Datain[23:18],Datain[4:1],1'b0};
 		J_type: 		Imm= {{11{Datain[24]}},Datain[24],Datain[12:5],Datain[13],Datain[23:14],1'b0};
 		U_type: 		Imm= {Datain[24:5],{12{1'b0}}};
 		default: 	Imm=32'h00000000;

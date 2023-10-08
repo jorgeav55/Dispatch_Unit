@@ -75,7 +75,7 @@ generate
 			.data_out		(Data_out[i])
 		);
 		
-		assign enable[i] = ((cdb_tag_tf_valid == 1'b1) && (WP[5:0] == i)) ? 1'b1: 1'b0;
+		assign enable[i] = ((cdb_tag_tf_valid == 1'b1) && (WP[5:0] == i[5:0])) ? 1'b1: 1'b0;
 	end
 endgenerate
 

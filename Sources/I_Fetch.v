@@ -73,7 +73,7 @@ assign wp_enable 				= ((current_read_pointer[3:2] == current_write_pointer[1:0]
 //Define read pointer enable and PC enable:
 //The read pointer and the PC are enabled as long as the Read enable input signal is asserted. 
 assign rp_enable				= Read_enable;
-assign pc_enable				= Read_enable;
+assign pc_enable				= Read_enable || jump_branch_valid;
 //Define output PC.
 //Output PC is always the current PC.
 assign PC_out					= current_PC;
@@ -177,7 +177,7 @@ Register
 	.data_in			(next_PC_rom),
 	.dafault_data	({(DATA_WIDTH){1'b0}}),
 	.reset			(reset),
-	.enable			(wp_enable),
+	.enable			(wp_enable | jump_branch_valid),
 	.flush			(1'b0),
 	.clk				(clk),
 	.data_out		(current_PC_rom)

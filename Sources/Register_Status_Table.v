@@ -139,9 +139,9 @@ RsTag1(
 
 generate
 	for (i=0;i<32;i=i+1) begin : en_
-		assign rst_enable[i] = ((rst_out[i] == {cdb_valid,cdb_tag})) || ((write_address0 == i) && (write_enable0))? 1'b1: 1'b0;
-		assign RF_write_enable[i] = rst_enable[i];
-		assign rst_in[i] = (write_address0 == i) ? write_data0: 7'b0;
+		assign rst_enable[i] = ((((rst_out[i] == {1'b1,cdb_tag}) && (cdb_valid == 1'b1)) || (write_address0 == i)) && (write_enable0))? 1'b1: 1'b0;
+		assign RF_write_enable[i] = ((rst_out[i] == {1'b1,cdb_tag}) && (cdb_valid == 1'b1)) ? 1'b1 : 1'b0;
+		assign rst_in[i] = (write_address0 == i) ? write_data0 : 7'b0;
 	end
 endgenerate
 endmodule

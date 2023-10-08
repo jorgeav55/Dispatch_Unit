@@ -5,7 +5,9 @@ module Control_decoder (
 	funct7,
 	Branch,
 	RegWrite,
-	//Jump,
+	rs2_immediate,
+	queue_stall,
+	Jump,
 	//JumpR,
 	dispatch_opcode,
 	dispatch_en_integer,
@@ -23,13 +25,15 @@ input [2:0] funct3;
 input [6:0] funct7;
 output reg Branch;
 output reg RegWrite;
-//Jump,
+output reg Jump;
 //JumpR,
 output reg [3:0] dispatch_opcode;
 output reg dispatch_en_integer;
 output reg dispatch_en_ld_st;
 output reg dispatch_en_mul;
 output reg dispatch_en_div;
+output reg rs2_immediate;
+output reg queue_stall;
 input issueque_full_integer;
 input issueque_full_ld_st;
 input issueque_full_mul;
@@ -62,13 +66,15 @@ always @ * begin
 			InstType = 3'b111;
 			Branch = 1'b0;
 			RegWrite = 1'b1;
-			//Jump,
+			Jump = 1'b0;
 			//JumpR,
 			dispatch_opcode = {funct7[5],funct3};
 			dispatch_en_integer = (~issueque_full_integer) & (int_enabler);
 			dispatch_en_ld_st = 1'b0;
 			dispatch_en_mul = (~issueque_full_mul) & (mul_enabler);
 			dispatch_en_div = (~issueque_full_div) & (div_enabler);
+			queue_stall = (issueque_full_integer & int_enabler) | (issueque_full_mul & mul_enabler) | (issueque_full_div & div_enabler);
+			rs2_immediate = 1'b0;
 			/*InstType = 3'b111;
 			//ALU_Op = 2'b10;
 			Jump = 1'b0;
@@ -86,13 +92,15 @@ always @ * begin
 			InstType = 3'b000;
 			Branch = 1'b0;
 			RegWrite = 1'b1;
-			//Jump,
+			Jump = 1'b0;
 			//JumpR,
 			dispatch_opcode = {1'b0,funct3};
 			dispatch_en_integer = ~issueque_full_integer;
 			dispatch_en_ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
 			dispatch_en_div = 1'b0;
+			queue_stall = issueque_full_integer;
+			rs2_immediate = 1'b1;
 			/*InstType = 3'b000;
 			ALU_Op = 2'b10;
 			Jump = 1'b0;
@@ -110,13 +118,15 @@ always @ * begin
 			InstType = 3'b000;
 			Branch = 1'b0;
 			RegWrite = 1'b1;
-			//Jump,
+			Jump = 1'b0;
 			//JumpR,
 			dispatch_opcode = 4'b0001;
 			dispatch_en_integer = 1'b0;
 			dispatch_en_ld_st = ~issueque_full_ld_st;
 			dispatch_en_mul = 1'b0;
 			dispatch_en_div = 1'b0;
+			queue_stall = issueque_full_ld_st;
+			rs2_immediate = 1'b1;
 			/*InstType = 3'b000;
 			ALU_Op = 2'b00;
 			Jump = 1'b0;
@@ -134,13 +144,15 @@ always @ * begin
 			InstType = 3'b010;
 			Branch = 1'b0;
 			RegWrite = 1'b0;
-			//Jump,
+			Jump = 1'b0;
 			//JumpR,
 			dispatch_opcode = 4'b0010;
 			dispatch_en_integer = 1'b0;
 			dispatch_en_ld_st = ~issueque_full_ld_st;
 			dispatch_en_mul = 1'b0;
 			dispatch_en_div = 1'b0;
+			queue_stall = issueque_full_ld_st;
+			rs2_immediate = 1'b1;
 			/*InstType = 3'b010;
 			ALU_Op = 2'b00;
 			Jump = 1'b0;
@@ -158,13 +170,15 @@ always @ * begin
 			InstType = 3'b011;
 			Branch = 1'b1;
 			RegWrite = 1'b0;
-			//Jump,
+			Jump = 1'b0;
 			//JumpR,
 			dispatch_opcode = 4'b0000;
-			dispatch_en_integer = 1'b0;
+			dispatch_en_integer = ~issueque_full_integer;
 			dispatch_en_ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
 			dispatch_en_div = 1'b0;
+			queue_stall = issueque_full_integer;
+			rs2_immediate = 1'b0;
 			/*InstType = 3'b011;
 			ALU_Op = 2'b01;
 			Jump = 1'b0;
@@ -182,13 +196,15 @@ always @ * begin
 			InstType = 3'b100;
 			Branch = 1'b0;
 			RegWrite = 1'b1;
-			//Jump,
+			Jump = 1'b1;
 			//JumpR,
 			dispatch_opcode = 4'b0000;
 			dispatch_en_integer = 1'b0;
 			dispatch_en_ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
 			dispatch_en_div = 1'b0;
+			queue_stall = 1'b0;
+			rs2_immediate = 1'b0;
 			/*InstType = 3'b100;
 			ALU_Op = 2'b00;
 			Jump = 1'b1;
@@ -206,13 +222,15 @@ always @ * begin
 			InstType = 3'b000;
 			Branch = 1'b0;
 			RegWrite = 1'b1;
-			//Jump,
+			Jump = 1'b0;
 			//JumpR,
 			dispatch_opcode = 4'b0000;
 			dispatch_en_integer = 1'b0;
 			dispatch_en_ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
 			dispatch_en_div = 1'b0;
+			queue_stall = 1'b0;
+			rs2_immediate = 1'b1;
 			/*InstType = 3'b000;
 			ALU_Op = 2'b00;
 			Jump = 1'b0;
@@ -230,13 +248,15 @@ always @ * begin
 			InstType = 3'b101;
 			Branch = 1'b0;
 			RegWrite = 1'b1;
-			//Jump,
+			Jump = 1'b0;
 			//JumpR,
 			dispatch_opcode = 4'b0000;
 			dispatch_en_integer = ~issueque_full_integer;
 			dispatch_en_ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
 			dispatch_en_div = 1'b0;
+			queue_stall = issueque_full_integer;
+			rs2_immediate = 1'b1;
 			/*InstType = 3'b101;
 			ALU_Op = 1'b00;
 			Jump = 1'b0;
@@ -251,16 +271,18 @@ always @ * begin
 		end
 		U_Add_Type:
 		begin
-			InstType = 3'b111;
+			InstType = 3'b101;
 			Branch = 1'b0;
 			RegWrite = 1'b1;
-			//Jump,
+			Jump = 1'b0;
 			//JumpR,
 			dispatch_opcode = 4'b0000;
 			dispatch_en_integer = ~issueque_full_integer;
 			dispatch_en_ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
 			dispatch_en_div = 1'b0;
+			queue_stall = issueque_full_integer;
+			rs2_immediate = 1'b1;
 			/*InstType = 3'b101;
 			ALU_Op = 1'b00;
 			Jump = 1'b0;
@@ -278,13 +300,15 @@ always @ * begin
 			InstType = 3'b000;
 			Branch = 1'b0;
 			RegWrite = 1'b0;
-			//Jump,
+			Jump = 1'b0;
 			//JumpR,
 			dispatch_opcode = 4'b0000;
 			dispatch_en_integer = 1'b0;
 			dispatch_en_ld_st = 1'b0;
 			dispatch_en_mul = 1'b0;
 			dispatch_en_div = 1'b0;
+			queue_stall = 1'b0;
+			rs2_immediate = 1'b0;
 			/*InstType = 3'b000;
 			ALU_Op = 1'b00;
 			Jump = 1'b0;

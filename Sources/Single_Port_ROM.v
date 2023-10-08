@@ -28,7 +28,7 @@ assign write_data = 32'b0;
 // Memory initialization.
 
 initial begin
-   $readmemh("../Sources/Test.txt", rom, 0, ROM_Size-1);
+   $readmemh("../Sources/Test.dat", rom, 0, ROM_Size-1);
 end
   
 always @(posedge clk) begin
@@ -37,10 +37,10 @@ end
 
 always @* begin
 	if (enable) begin
-		data[4*DATA_WIDTH-1:3*DATA_WIDTH] = rom[addr[$clog2(ROM_Size):0]+3];
-		data[3*DATA_WIDTH-1:2*DATA_WIDTH] = rom[addr[$clog2(ROM_Size):0]+2];
-		data[2*DATA_WIDTH-1:  DATA_WIDTH] = rom[addr[$clog2(ROM_Size):0]+1];
-		data[  DATA_WIDTH-1:0           ] = rom[addr[$clog2(ROM_Size):0]  ];
+		data[4*DATA_WIDTH-1:3*DATA_WIDTH] = rom[addr[5:0]+3];
+		data[3*DATA_WIDTH-1:2*DATA_WIDTH] = rom[addr[5:0]+2];
+		data[2*DATA_WIDTH-1:  DATA_WIDTH] = rom[addr[5:0]+1];
+		data[  DATA_WIDTH-1:0           ] = rom[addr[5:0]  ];
 	end
 	else begin
 		data = {(4*DATA_WIDTH-1){1'b0}};

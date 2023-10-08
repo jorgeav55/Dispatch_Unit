@@ -142,7 +142,7 @@ generate
 	for (i=0;i<2;i=i+1) begin: R0_1
 		Register_RF R (
 			.D(D),
-			.dafault_D(i),
+			.dafault_D(32'h0000_0000),
 			.rst(rst),
 			.en(enable[i]),
 			.clk(clk),
@@ -152,7 +152,7 @@ generate
 	for (i=3;i<32;i=i+1) begin: R3_31
 		Register_RF R (
 			.D(D),
-			.dafault_D(i),
+			.dafault_D(32'h0000_0000),
 			.rst(rst),
 			.en(enable[i]),
 			.clk(clk),

@@ -70,20 +70,27 @@ output							dispatch_rs2_valid;
 //wire Jump, JumpR, MemRead, MemWrite, PCSave, RegWrite, BNEinst, BEQinst;
 //wire [1:0] /*MemToReg,*/ ALU_source;
 wire branch;
+wire jump;
 wire RegWrite;
 wire stall;
 wire tag_fifo_empty;
 wire branch_stall;
+wire rs2_imm_data;
+wire queue_stall;
 wire [2:0] Ins_type;
 wire [5:0] current_tag;
 wire [31:0] RF_write_enable;
+wire [31:0] RF_rs2_data;
 wire [31:0] Inmediate_Data;
+wire [31:0] PC_plus_imm;
+wire [31:0] branch_address;
 
-
-assign stall = tag_fifo_empty | branch_stall;
+assign stall = tag_fifo_empty | branch_stall | queue_stall;
 assign Read_enable = ~stall;
 assign dispatch_rd_tag = current_tag;
-assign jump_branch_valid = CDB_branch_taken;
+assign jump_branch_valid = CDB_branch_taken | jump;
+assign dispatch_rs2_data = (rs2_imm_data == 1'b1) ? Inmediate_Data : RF_rs2_data;
+assign jump_branch_address = (branch_stall == 1'b1) ? branch_address: PC_plus_imm;
 /*Control_unit_riscv Decode(
 	.mod({Instruction[25],Instruction[30]}),
 	.opcode(Instruction[6:0]),
@@ -108,7 +115,9 @@ Control_decoder Decoder(
 .funct7(Instruction[31:25]),
 .Branch(branch),
 .RegWrite(RegWrite),
-//Jump,
+.rs2_immediate(rs2_imm_data),
+.queue_stall(queue_stall),
+.Jump(jump),
 //JumpR,
 .dispatch_opcode(dispatch_opcode),
 .dispatch_en_integer(dispatch_en_integer),
@@ -152,7 +161,7 @@ RegisterFile #(.DATA_WIDTH(32), .ADDR_WIDTH(5)) Reg_File(
   .read_address0(Instruction[19:15]),
   .read_data0(dispatch_rs1_data),
   .read_address1(Instruction[24:20]),
-  .read_data1(dispatch_rs2_data)
+  .read_data1(RF_rs2_data)
 );
 
 Register_Status_Table RST(
@@ -182,7 +191,7 @@ adder PC_adder(
 //Inputs
 .A(PC_out),
 .B(Inmediate_Data),
-.suma(jump_branch_address)
+.suma(PC_plus_imm)
 );
 
 Branch_Stall_Logic Branch_Logic(
@@ -195,5 +204,19 @@ Branch_Stall_Logic Branch_Logic(
 	.stall(branch_stall)
 	
 );
+
+Register
+#(
+	.DATA_WIDTH(DATA_WIDTH)) Branch_Address
+(
+	.data_in			(PC_plus_imm),
+	.dafault_data	({(DATA_WIDTH){1'b0}}),
+	.reset			(reset),
+	.enable			(branch),
+	.flush			(1'b0),
+	.clk				(clk),
+	.data_out		(branch_address)
+);
+
 
 endmodule
