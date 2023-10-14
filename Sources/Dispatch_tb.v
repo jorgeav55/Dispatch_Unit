@@ -22,10 +22,10 @@ wire jb_en;
 wire [31:0]	jb_address;
 
 
-reg issueque_full_integer,
-     issueque_full_ld_st,
-     issueque_full_mul,
-     issueque_full_div;
+reg 	issueque_full_integer;
+reg	issueque_full_ld_st;
+reg  	issueque_full_mul;
+reg	issueque_full_div;
 
 reg [5:0] CDB_tag;
 reg CDB_valid;
@@ -38,7 +38,8 @@ reg reset;
 wire rd_en;
 
 reg [5:0] CDB_tag_random [63:0];
-reg [5:0]i, j, rand_alt, rand_delay;
+reg [5:0]i, j, rand_alt, rand_delay, rand_delay_int, rand_delay_mul_div;
+reg [1:0] rand_alt_exec;
 
 I_Fetch
 #(
@@ -118,13 +119,18 @@ always begin
 end
 
 always begin
+	
+	@(posedge clk);
+	exe_unit_full;
+	end
+	
+always begin
 	#1
 	branch;
-	
 	end
 
 always begin 
-	#(($urandom_range(1, 3))*2+1);
+	#(($urandom_range(0, 2))*2+1);
 	@(posedge clk);
 	random_CDB();
 
@@ -135,50 +141,14 @@ always begin
 	@(posedge clk);
 end
 
-/*
-
 always begin
-	#8
-	CDB_tag = 6'h01;
-	CDB_valid = 1'b1;
-	CDB_data = 32'hAF01;
-	#2;
-	CDB_tag = 6'h00;
-	CDB_valid = 1'b1;
-	CDB_data = 32'hAF00;
-	#2;
-	CDB_tag = 6'h03;
-	CDB_valid = 1'b1;
-	CDB_data = 32'hAF03;
-	#2;
-	CDB_tag = 6'h04;
-	CDB_valid = 1'b1;
-	CDB_data = 32'hAF04;
-	#2;
-	CDB_tag = 6'h02;
-	CDB_valid = 1'b1;
-	CDB_data = 32'hAF02;
-	#2;
-	CDB_valid = 1'b0;
-	issueque_full_integer = 1'b1;
-	#4;
-	issueque_full_integer = 1'b0;
-	#2;
-	issueque_full_mul = 1'b1;
-	#4;
-	issueque_full_mul = 1'b0;
-	#20;
-	issueque_full_div = 1'b1;
-	#8;
-	issueque_full_div = 1'b0;
-	#16;
-	CDB_branch = 1'b1;
-	CDB_branch_taken = 1'b1;
-	#2;
-	CDB_branch = 1'b0;
-	CDB_branch_taken = 1'b0;
-end
-*/
+	@(negedge clk);
+	
+	mul_unit_full;
+	end
+	
+
+
 task capture_CDB(); begin
 	if ((dispatch_en_integer || dispatch_en_mul || dispatch_en_div) && ~reset) begin
 	CDB_tag_random[i] = dispatch_rd_tag;
@@ -218,8 +188,72 @@ begin: bbc
 		CDB_branch = 1'b0;
 		CDB_branch_taken = 1'b0;
 	end
+end
+endtask
 
 
+task exe_unit_full;
+begin: full
+	integer delay;	
+	
+	if (UUT1.Decoder.int_enabler == 1'b1 && ~reset )begin
+	rand_alt_exec = $urandom_range(0, 3);
+	rand_delay_int =  $urandom_range(0 , 2);
+		if (rand_alt_exec == 2'b00)begin
+		issueque_full_integer = 1'b1;
+		for (delay = 0; delay<rand_delay_int; delay=delay+1)
+			begin
+				  @(posedge clk);
+			end
+			@(posedge clk);
+			issueque_full_integer = 1'b0;
+
+		end
+		else if (rand_alt_exec == 2'b01) begin
+			issueque_full_integer = 1'b0;
+		end
+		else if (rand_alt_exec == 2'b10) begin
+			issueque_full_integer = 1'b0;
+		end
+		else if (rand_alt_exec == 2'b11) begin
+			issueque_full_integer = 1'b0;
+		end
+	end
+
+	
+		
+end
+endtask
+
+task mul_unit_full;
+begin: mul_full
+	integer delay;
+	
+	if (UUT1.Decoder.mul_enabler == 1'b1)begin
+	rand_delay_mul_div =  $urandom_range(2, 4);
+	issueque_full_mul = 1'b1; 	
+		for (delay = 0; delay<rand_delay_mul_div; delay=delay+1)
+			begin				
+				 @(posedge clk);
+					
+			end
+			issueque_full_mul = 1'b0;
+			@(posedge clk);
+
+	
+	end
+	else if (UUT1.Decoder.div_enabler == 1'b1)begin
+	issueque_full_div = 1'b1;
+	rand_delay_mul_div =  $urandom_range(2 , 3);
+		for (delay = 0; delay<rand_delay_mul_div; delay=delay+1)
+			begin
+				 @(posedge clk);
+				 
+			end
+			issueque_full_div = 1'b0;
+			@(posedge clk);
+
+	end
 end
 endtask
 
