@@ -37,6 +37,8 @@ reg clk;
 reg reset;
 wire rd_en;
 
+reg [5:0] CDB_tag_random [63:0];
+reg [5:0]i, j, rand_alt;
 
 I_Fetch
 #(
@@ -61,7 +63,7 @@ UUT1(
 //Inputs
 	.clk(clk),
 	.reset(reset),
-	.empty(empty),
+//	.empty(empty),
 	.Instruction(instruction),
 	.PC_out(current_PC),
 	.CDB_tag(CDB_tag),
@@ -92,6 +94,9 @@ UUT1(
 );
 
 initial begin
+	rand_alt = 1'b0;
+	i = 1'b0;
+	j = 1'b0;
 	issueque_full_integer = 1'b0;
    issueque_full_ld_st = 1'b0;
    issueque_full_mul = 1'b0;
@@ -111,6 +116,20 @@ always begin
 	#1 
 	clk = ~clk;
 end
+
+always begin 
+	#(($urandom_range(1, 3))*2+1);
+	@(posedge clk);
+	random_CDB();
+
+end
+
+always begin
+	capture_CDB();
+	@(posedge clk);
+end
+
+/*
 
 always begin
 	#8
@@ -142,10 +161,42 @@ always begin
 	issueque_full_mul = 1'b1;
 	#4;
 	issueque_full_mul = 1'b0;
-	#10;
+	#20;
 	issueque_full_div = 1'b1;
-	#6;
+	#8;
 	issueque_full_div = 1'b0;
+	#16;
+	CDB_branch = 1'b1;
+	CDB_branch_taken = 1'b1;
+	#2;
+	CDB_branch = 1'b0;
+	CDB_branch_taken = 1'b0;
 end
+*/
+task capture_CDB(); begin
+	if (dispatch_en_integer || dispatch_en_mul || dispatch_en_div) begin
+	CDB_tag_random[i] = dispatch_rd_tag;
+	i = i + 1'b1;
+	end
+end
+endtask
+
+task random_CDB();
+begin
+	rand_alt = $urandom_range(0, i-1'b1);
+	CDB_tag = CDB_tag_random[rand_alt];
+	CDB_valid = 1'b1;
+	CDB_data = $random;
+	@(negedge clk);
+	CDB_valid = 1'b0;
+	for (j = $urandom_range(0, i-1'b1); j<i; j=j+1'b1)
+		begin
+			CDB_tag_random[j] = CDB_tag_random[j+1];
+		end
+		i = i - 1'b1;
+end	
+endtask 
 
 endmodule
+
+

@@ -6,7 +6,7 @@ parameter REGISTER_WIDTH = 7)
 //Inputs
 	clk,
 	reset,
-	empty,
+//	empty,
 	Instruction,
 	PC_out,
 	CDB_tag,
@@ -38,7 +38,7 @@ parameter REGISTER_WIDTH = 7)
 
 input 							clk;
 input 							reset;
-input								empty;
+//input								empty;
 input	[DATA_WIDTH-1:0]		Instruction;
 input	[DATA_WIDTH-1:0]		PC_out;
 input	[5:0]						CDB_tag;
